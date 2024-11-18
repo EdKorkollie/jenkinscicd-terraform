@@ -33,6 +33,8 @@ variable "SonarAMIS" {
 
 variable "PATH_TO_PUBLIC_KEY" {
   default = "jenkinskey.pub"
+
+  //to generate keypair run command: ssh-keygen -f jenkinskey
 }
 
 variable "INSTANCE_USERNAME" {
