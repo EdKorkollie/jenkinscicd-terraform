@@ -1,9 +1,9 @@
 #!/bin/bash
-yum install java-1.8.0-openjdk.x86_64 wget -y   
+sudo yum install java-17-openjdk wget -y   
 mkdir -p /opt/nexus/   
 mkdir -p /tmp/nexus/                           
 cd /tmp/nexus/
-NEXUSURL="https://download.sonatype.com/nexus/3/latest-unix.tar.gz"
+NEXUSURL="https://download.sonatype.com/nexus/3/nexus-3.74.0-05-unix.tar.gz"
 wget $NEXUSURL -O nexus.tar.gz
 sleep 10
 EXTOUT=`tar xzvf nexus.tar.gz`

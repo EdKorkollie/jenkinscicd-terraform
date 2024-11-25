@@ -4,9 +4,10 @@ resource "aws_key_pair" "jenkins_keypair" {
 }
 
 resource "aws_instance" "jenkinsServer" {
-  ami = lookup(var.JenkinsAMIS, var.AWS_REGION)
+  ami = "ami-0866a3c8686eaeeba"
 
-  key_name = aws_key_pair.jenkins_keypair
+  key_name = aws_key_pair.jenkins_keypair.key_name
+  vpc_security_group_ids = [aws_security_group.jenkins_SG.id]
 
   instance_type = "t2.small"
 
@@ -17,11 +18,18 @@ resource "aws_instance" "jenkinsServer" {
 
   provisioner "remote-exec" {
     inline = [ 
-        "chmod +x/tmp/installjenkins.sh",
+        "chmod +x /tmp/installjenkins.sh",
         "sudo sed -i -e 's/\r$//' /tmp/installjenkins.sh",
         "sudo /tmp/installjenkins.sh" 
      ]
   }
+
+  connection {
+      host = coalesce(self.public_ip, self.private_ip)
+      type = "ssh"
+      user = var.INSTANCE_USERNAME
+      private_key = file(var.PATH_TO_PRIVATE_KEY)
+    }
 
   tags = {
     Name = "jenkins-server"
@@ -29,9 +37,10 @@ resource "aws_instance" "jenkinsServer" {
 }
 
 resource "aws_instance" "nexusServer" {
-  ami = lookup(var.NexusAMIS, var.AWS_REGION)
+  ami = "ami-0df2a11dd1fe1f8e3"
 
-  key_name = aws_key_pair.jenkins_keypair
+  key_name = aws_key_pair.jenkins_keypair.key_name
+  vpc_security_group_ids = [aws_security_group.nexus-SG.id]
 
   instance_type = "t2.medium"
 
@@ -42,11 +51,18 @@ resource "aws_instance" "nexusServer" {
 
   provisioner "remote-exec" {
     inline = [ 
-        "chmod +x/tmp/installnexus.sh",
-        "sudo sed -i -e 's/\r$//' /tmp/installnexus.sh",
-        "sudo /tmp/installnexus.sh" 
+        "chmod +x /tmp/installnexus.sh", 
+        "sudo sed -i -e 's/\r$//' /tmp/installnexus.sh", 
+        "sudo /tmp/installnexus.sh"
      ]
   }
+
+   connection {
+      host = coalesce(self.public_ip, self.private_ip)
+      type = "ssh"
+      user = var.NEXUSINSTANCE_USERNAME
+      private_key = file(var.PATH_TO_PRIVATE_KEY)
+    }
 
   tags = {
     Name = "nexus-server"
@@ -54,9 +70,10 @@ resource "aws_instance" "nexusServer" {
 }
 
 resource "aws_instance" "sonarServer" {
-  ami = lookup(var.SonarAMIS, var.AWS_REGION)
+  ami = "ami-0866a3c8686eaeeba"
 
-  key_name = aws_key_pair.jenkins_keypair
+  key_name = aws_key_pair.jenkins_keypair.key_name
+  vpc_security_group_ids = [aws_security_group.sonar-SG.id]
 
   instance_type = "t2.medium"
   
@@ -67,11 +84,18 @@ resource "aws_instance" "sonarServer" {
 
   provisioner "remote-exec" {
     inline = [ 
-        "chmod +x/tmp/installsonar.sh",
-        "sudo sed -i -e 's/\r$//' /tmp/installsonar.sh",
-        "sudo /tmp/installsonar.sh" 
+        "chmod +x /tmp/installsonar.sh", # provide the executable permission to this file
+        "sudo sed -i -e 's/\r$//' /tmp/installsonar.sh", # Remove the spurious CR characters
+        "sudo /tmp/installsonar.sh"
      ]
   }
+
+   connection {
+      host = coalesce(self.public_ip, self.private_ip)
+      type = "ssh"
+      user = var.INSTANCE_USERNAME
+      private_key = file(var.PATH_TO_PRIVATE_KEY)
+    }
 
   tags = {
     Name = "sonar-server"

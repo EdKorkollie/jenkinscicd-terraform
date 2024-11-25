@@ -37,6 +37,14 @@ variable "PATH_TO_PUBLIC_KEY" {
   //to generate keypair run command: ssh-keygen -f jenkinskey
 }
 
+variable "PATH_TO_PRIVATE_KEY" {
+  default = "jenkinskey"
+}
+
 variable "INSTANCE_USERNAME" {
   default = "ubuntu"
+}
+
+variable "NEXUSINSTANCE_USERNAME" {
+  default = "ec2-user"
 }
